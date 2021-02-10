@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<launch>
+
+  <param name="/use_sim_time" value="true" />
+  <!-- 启动 Webots -->
+  <arg name="no_gui" default="false," doc="Start Webots with minimal GUI"/>
+  <include file="$(find webots_ros)/launch/webots.launch">
+    <arg name="mode" value="realtime"/>
+    <arg name="no_gui" value="$(arg no_gui)"/>
+    <arg name="world" value="$(find volcano_moveit)/world/moveit.wbt"/>
+  </include>
+
+  <!-- 加载模型 -->
+  <include file="$(find ur_e_description)/launch/ur5e_upload.launch">
+    <arg name="limited" value="false"/>
+  </include>
+
+  <!-- Fake Calibration -->
+  <!-- <node pkg="rostopic" type="rostopic" name="fake_joint_calibration" args="pub /calibrated std_msgs/Bool false" /> -->
+
+  <!-- start this controller -->
+  <rosparam file="$(find ur_e_gazebo)/controller/arm_controller_ur5e.yaml" command="load"/>
+  <node name="arm_controller_spawner" pkg="controller_manager" type="controller_manager" args="spawn arm_controller" respawn="false" output="screen"/>
+
+  <!-- load other controllers -->
+  <node name="ros_control_controller_manager" pkg="controller_manager" type="controller_manager" respawn="false" output="screen" args="load joint_group_position_controller" />
+</launch>
