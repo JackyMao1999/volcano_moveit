@@ -9,6 +9,8 @@ find_package(catkin REQUIRED COMPONENTS
   sensor_msgs
   actionlib
   moveit_msgs
+  moveit_ros_planning_interface
+  moveit_visual_tools
 )
 
 add_message_files(
@@ -147,11 +149,21 @@ catkin_package(
  sensor_msgs 
  actionlib 
  moveit_msgs
+ moveit_ros_planning_interface
+ moveit_visual_tools
 )
 
 include_directories(
   ${catkin_INCLUDE_DIRS}
 )
+
+add_executable(move_group_control src/move_group_control.cpp)
+add_dependencies(move_group_control webots_ros_generate_messages_cpp)
+target_link_libraries(move_group_control  ${catkin_LIBRARIES})
+
+add_executable(move_group_demo src/move_group_demo.cpp)
+add_dependencies(move_group_demo webots_ros_generate_messages_cpp)
+target_link_libraries(move_group_demo  ${catkin_LIBRARIES})
 
 add_executable(robot_state_publisher src/robot_state_publisher.cpp)
 add_dependencies(robot_state_publisher webots_ros_generate_messages_cpp)
@@ -160,3 +172,8 @@ target_link_libraries(robot_state_publisher  ${catkin_LIBRARIES})
 add_executable(trajectory_follower src/trajectory_follower.cpp)
 add_dependencies(trajectory_follower webots_ros_generate_messages_cpp)
 target_link_libraries(trajectory_follower  ${catkin_LIBRARIES})
+
+
+catkin_install_python(PROGRAMS scripts/robot_vision.py 
+  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
