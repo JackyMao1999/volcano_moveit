@@ -14,7 +14,7 @@ Description:
 #include <webots_ros/set_int.h>
 #include <webots_ros/Int32Stamped.h>
 #include <webots_ros/Float64Stamped.h>
-
+#include <control_msgs/FollowJointTrajectoryActionGoal.h>
 using namespace std;
 
 #define TIME_STEP 32    //时钟
@@ -137,6 +137,17 @@ int main(int argc, char **argv)
         else     
             ROS_ERROR("Failed to enabled %s.", armNames[i]);
     }
+
+    // // 始能摄像机
+    // ros::ServiceClient camera_client;
+    // webots_ros::set_int camera_srv;
+    // camera_client = n->serviceClient<webots_ros::set_int>("/ur5e/camera/enable");
+    // camera_srv.request.value = TIME_STEP;
+    // if (camera_client.call(camera_srv) && camera_srv.response.success)     
+    //     ROS_INFO("Enabled camera successful.");   
+    // else     
+    //     ROS_ERROR("Failed to enabled camera.");
+
     ros::Subscriber sub_elbow_joint_sensor;
     sub_elbow_joint_sensor = n->subscribe("/ur5e/"+string(armNames[0])+"_sensor/value",1,elbow_joint_sensorcallback);
     ros::Subscriber sub_shoulder_lift_joint_sensor;
@@ -154,7 +165,8 @@ int main(int argc, char **argv)
 
     ros::Publisher pub_Joint_State_Publisher;
     pub_Joint_State_Publisher = n->advertise<sensor_msgs::JointState>("/joint_states",1);
-
+    // ros::Publisher pub_Joint_Goal;
+    // pub_Joint_Goal = n->advertise<control_msgs::FollowJointTrajectoryActionGoal>("/follow_joint_trajectory/goal",1);
     // main loop
     while (ros::ok()) {
         
